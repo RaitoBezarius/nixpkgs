@@ -4,7 +4,7 @@
 , srht, minio, pygit2, scmsrht }:
 
 let
-  version = "0.60.7";
+  version = "0.61.10";
 
   buildShell = src: buildGoModule {
     inherit src version;
@@ -42,7 +42,7 @@ in buildPythonPackage rec {
   src = fetchgit {
     url = "https://git.sr.ht/~sircmpwn/git.sr.ht";
     rev = version;
-    sha256 = "EdxgT6IQZgj3KeU3UC+QAQb7BilBY769NhJK633tmE4=";
+    sha256 = "0g7aj5wlns0m3kf2aajqjjb5fwk5vbb8frrkdfp4118235h3xcqy";
   };
 
   nativeBuildInputs = srht.nativeBuildInputs;
