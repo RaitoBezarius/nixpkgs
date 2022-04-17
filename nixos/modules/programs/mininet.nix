@@ -24,7 +24,7 @@ let
 
       # mn errors out without a telnet binary
       # pkgs.telnet brings an undesired ifconfig into PATH see #43105
-      ln -s ${pkgs.telnet}/bin/telnet $out/bin/telnet
+      ln -s ${pkgs.inetutils}/bin/telnet $out/bin/telnet
     '';
 in
 {
