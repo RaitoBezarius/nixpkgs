@@ -7449,6 +7449,8 @@ in {
 
   pyerfa = callPackage ../development/python-modules/pyerfa { };
 
+  pyethash = callPackage ../development/python-modules/pyethash { };
+
   pyevmasm = callPackage ../development/python-modules/pyevmasm { };
 
   pyevilgenius = callPackage ../development/python-modules/pyevilgenius { };
