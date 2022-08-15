@@ -7451,6 +7451,8 @@ in {
 
   pyethash = callPackage ../development/python-modules/pyethash { };
 
+  pyevm = callPackage ../development/python-modules/pyevm { };
+
   pyevmasm = callPackage ../development/python-modules/pyevmasm { };
 
   pyevilgenius = callPackage ../development/python-modules/pyevilgenius { };
