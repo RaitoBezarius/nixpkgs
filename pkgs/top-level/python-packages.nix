@@ -8919,6 +8919,8 @@ in {
 
   pytricia = callPackage ../development/python-modules/pytricia { };
 
+  py-trie = callPackage ../development/python-modules/py-trie { };
+
   pyttsx3 = callPackage ../development/python-modules/pyttsx3 { };
 
   pytube = callPackage ../development/python-modules/pytube { };
