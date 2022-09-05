@@ -32305,6 +32305,8 @@ with pkgs;
 
   zotero = callPackage ../applications/office/zotero { };
 
+  zotero-dataserver = callPackage ../servers/web-apps/zotero-dataserver { };
+
   zscroll = callPackage ../applications/misc/zscroll {};
 
   zsteg = callPackage ../tools/security/zsteg { };
