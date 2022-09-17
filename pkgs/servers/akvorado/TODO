@@ -1,0 +1,5 @@
+- prendre le Makefile, le offline-iser pour Nix
+- télécharger les éléments requis en plus
+- packager le frontend
+- lancer les tests
+- créer les binaires Go
