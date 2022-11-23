@@ -2,10 +2,10 @@
 
 rec {
   # gcc.arch to its features (as in /proc/cpuinfo)
-  features = {
+  features = rec {
     # x86_64 Generic
     # Spec: https://gitlab.com/x86-psABIs/x86-64-ABI/
-    default        = [ ];
+    default        = x86-64-v2;
     x86-64         = [ ];
     x86-64-v2      = [ "sse3" "ssse3" "sse4_1" "sse4_2"                                                  ];
     x86-64-v3      = [ "sse3" "ssse3" "sse4_1" "sse4_2"               "avx" "avx2"          "fma"        ];
