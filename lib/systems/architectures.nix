@@ -49,9 +49,9 @@ rec {
   # a superior CPU has all the features of an inferior and is able to build and test code for it
   inferiors = {
     # x86_64 Generic
-    default   = [ ];
-    x86-64    = [ ];
-    x86-64-v2 = [ "x86-64"    ];
+    default        = [ "x86-64-v2"   ];
+    x86-64         = [ ];
+    x86-64-v2      = [ "x86-64" ] ++ inferiors.x86-64;
     x86-64-v3 = [ "x86-64-v2" ] ++ inferiors.x86-64-v2;
     x86-64-v4 = [ "x86-64-v3" ] ++ inferiors.x86-64-v3;
 
