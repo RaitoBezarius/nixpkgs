@@ -29,6 +29,22 @@ let
     nixpkgs = nixpkgsSrc;
   }) [ "unstable" ];
 
+  nixpkgs-unoptimised' = builtins.removeAttrs (import ../pkgs/top-level/release.nix {
+    inherit supportedSystems;
+    nixpkgs = nixpkgsSrc;
+    # default value plus empty gcc.arch/gcc.tune
+    nixpkgsArgs = {
+      config = {
+        allowUnfree = false;
+        gcc = {
+          arch = null;
+          tune = null;
+        };
+        inHydra = true;
+      };
+    };
+  }) [ "unstable" ];
+
 in rec {
 
   nixos = {
@@ -87,6 +103,31 @@ in rec {
       tarball
       vim
       tests-stdenv-gcc-stageCompare;
+  };
+
+  nixpkgs-unoptimised = {
+    inherit (nixpkgs-unoptimised')
+      apacheHttpd
+      cmake
+      cryptsetup
+      emacs
+      gettext
+      git
+      imagemagick
+      jdk
+      linux
+      mariadb
+      nginx
+      nodejs
+      openssh
+      php
+      postgresql
+      python
+      rsyslog
+      stdenv
+      subversion
+      tarball
+      vim;
   };
 
   tested = let
