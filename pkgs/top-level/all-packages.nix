@@ -15861,13 +15861,13 @@ with pkgs;
     inherit (darwin) apple_sdk;
   };
 
-  rust_1_67 = callPackage ../development/compilers/rust/1_67.nix {
+  rust_1_68 = callPackage ../development/compilers/rust/1_68.nix {
     inherit (darwin.apple_sdk.frameworks) CoreFoundation Security SystemConfiguration;
     llvm_15 = llvmPackages_15.libllvm;
     # https://github.com/NixOS/nixpkgs/issues/201254
     stdenv = if stdenv.isLinux && stdenv.isAarch64 && stdenv.cc.isGNU then gcc11Stdenv else stdenv;
   };
-  rust = rust_1_67;
+  rust = rust_1_68;
 
   mrustc = callPackage ../development/compilers/mrustc { };
   mrustc-minicargo = callPackage ../development/compilers/mrustc/minicargo.nix { };
@@ -15876,8 +15876,8 @@ with pkgs;
     openssl = openssl_1_1;
   };
 
-  rustPackages_1_67 = rust_1_67.packages.stable;
-  rustPackages = rustPackages_1_67;
+  rustPackages_1_68 = rust_1_68.packages.stable;
+  rustPackages = rustPackages_1_68;
 
   inherit (rustPackages) cargo cargo-auditable cargo-auditable-cargo-wrapper clippy rustc rustPlatform;
 
