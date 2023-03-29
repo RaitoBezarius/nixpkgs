@@ -256,5 +256,11 @@ in {
     sha256 = "sha256-CdPuyZMXFzANEdnsr/rB5ckkT8X5uziniY5vmRCKl1U=";
 
     isUnstable = true;
+
+    # Necessary for 6.2.8+ and 6.3 compatibility, see https://github.com/openzfs/zfs/issues/14658
+    extraPatches = [
+      ./kernel6_3_compat-part1.patch
+      ./kernel6_3_compat-part2.patch
+    ];
   };
 }
