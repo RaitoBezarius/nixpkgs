@@ -25,11 +25,13 @@ stdenv.mkDerivation rec {
   hardeningDisable = lib.optionals stdenv.isDarwin ["strictoverflow"];
 
   makeFlags = [
-    "PLATFORM=${platform}" "PREFIX=$(out)"
-  ] ++ (lib.optionals stdenv.isDarwin [
-    "XCODE_TOOL_PATH=${darwin.binutils.bintools}/bin"
+    "PREFIX=$(out)"
+    "PLATFORM=${platform}"
     "C_COMPILER=$(CC)"
     "CXX_COMPILER=$(CXX)"
+    "LIBRARIAN=$(AR)"
+  ] ++ (lib.optionals stdenv.isDarwin [
+    "XCODE_TOOL_PATH=${darwin.binutils.bintools}/bin"
     "LINKER_OPTIONS=-headerpad_max_install_names"
     "POSTINSTALL_PROGRAM=install_name_tool"
   ]);
