@@ -455,7 +455,8 @@ stdenv.mkDerivation rec {
 
     license = licenses.gpl3Plus;
 
-    platforms = platforms.gnu ++ platforms.linux;
+    # Grub requires Zifencei extension on RISC-V.
+    platforms = remove "riscv64-linux" (platforms.gnu ++ platforms.linux);
 
     maintainers = [ maintainers.samueldr ];
   };
