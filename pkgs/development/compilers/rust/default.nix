@@ -16,11 +16,19 @@
 , newScope, callPackage
 , CoreFoundation, Security, SystemConfiguration
 , makeRustPlatform
+# User can override the derivation to add new extra targets.
+, userExtraTargets ? [ ]
 }:
 
 let
   # Use `import` to make sure no packages sneak in here.
   lib' = import ../../../build-support/rust/lib { inherit lib; };
+  # Default extra targets based on architecture.
+  defaultArchitectures = [ "x86_64" ];
+  defaultUefiTargets = map (target: "${target}-unknown-uefi") defaultArchitectures;
+  defaultBaremetalTargets = map (target: "${target}-unknown-none") defaultArchitectures;
+  defaultWebTargets = [ "wasm64-unknown-unknown" "wasm32-unknown-emscripten" "wasm32-unknown-unknown" ];
+  defaultExtraTargets = defaultUefiTargets ++ defaultBaremetalTargets ++ defaultWebTargets;
 in
 {
   lib = lib';
@@ -62,6 +70,7 @@ in
         sha256 = rustcSha256;
         inherit enableRustcDev;
         inherit llvmShared llvmSharedForBuild llvmSharedForHost llvmSharedForTarget llvmPackages;
+        extraTargets = defaultExtraTargets ++ userExtraTargets;
 
         patches = rustcPatches;
 
