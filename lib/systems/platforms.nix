@@ -18,8 +18,8 @@ rec {
     };
     gcc = {
       # this should match the microarchitecture level of lib.systems.architectures.features.default
-      # but nehalem is used instead of x86-64-v2 because as of writting the bootstrapping gcc in stage 0 does not understand it
-      arch = "nehalem";
+      # but skylake is used instead of x86-64-v3 because as of writting the bootstrapping gcc in stage 0 does not understand it
+      arch = "skylake";
       tune = "generic";
     };
   };

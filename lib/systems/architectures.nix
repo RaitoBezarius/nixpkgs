@@ -5,7 +5,7 @@ rec {
   features = rec {
     # x86_64 Generic
     # Spec: https://gitlab.com/x86-psABIs/x86-64-ABI/
-    default        = x86-64-v2;
+    default        = x86-64-v3;
     x86-64         = [ ];
     x86-64-v2      = [ "sse3" "ssse3" "sse4_1" "sse4_2"                                                  ];
     x86-64-v3      = [ "sse3" "ssse3" "sse4_1" "sse4_2"               "avx" "avx2"          "fma"        ];
@@ -49,7 +49,7 @@ rec {
   # a superior CPU has all the features of an inferior and is able to build and test code for it
   inferiors = {
     # x86_64 Generic
-    default   = [ "x86-64-v2"   ];
+    default   = [ "x86-64-v3"   ];
     x86-64    = [ ];
     x86-64-v2 = [ "x86-64" ] ++ inferiors.x86-64;
     x86-64-v3 = [ "x86-64-v2" ] ++ inferiors.x86-64-v2;
