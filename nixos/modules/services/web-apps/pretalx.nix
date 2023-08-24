@@ -28,7 +28,10 @@ let
     ++ lib.optionals (cfg.settings.database.backend == "mysql") cfg.package.optional-dependencies.mysql
     ++ lib.optionals (cfg.settings.database.backend == "postgresql") cfg.package.optional-dependencies.postgres;
 
-  PYTHONPATH = "${cfg.package.PYTHONPATH}:${cfg.package.python.pkgs.makePythonPath extras}";
+  pythonEnv = cfg.package.python.buildEnv.override {
+    extraLibs = [ (cfg.package.python.pkgs.toPythonModule cfg.package) ] ++ (with cfg.package.python.pkgs; [ gunicorn celery ]) ++ extras;
+  };
+  getPythonBin = name: "${lib.getBin pythonEnv}/bin/${name}";
 in
 
 {
@@ -311,7 +314,6 @@ in
     systemd.services = let
       commonUnitConfig = {
         environment = {
-          inherit PYTHONPATH;
           PRETALX_CONFIG_FILE = format.generate "pretalx.cfg" cfg.settings;
         };
         serviceConfig = {
@@ -343,13 +345,13 @@ in
         ];
         preStart = ''
           mkdir -p $STATE_DIRECTORY/media
-          ln -sf ${cfg.package}/bin/pretalx-manage $STATE_DIRECTORY/pretalx-manage
+          ln -sf ${getPythonBin "pretalx-manage"} $STATE_DIRECTORY/pretalx-manage
 
           versionFile="$STATE_DIRECTORY/.version"
           version=$(cat "$versionFile" 2>/dev/null || echo 0)
 
           if [[ $version != ${cfg.package.version} ]]; then
-            ${cfg.package.python.interpreter} -m pretalx migrate
+            ${getPythonBin "python"} -m pretalx migrate
 
             echo "${cfg.package.version}" > "$versionFile"
           fi
@@ -357,7 +359,7 @@ in
           echo "Run 'pretalx-manage init' to initialize your instance! Then log in at ${cfg.settings.site.url}/orga/."
         '';
         serviceConfig = {
-          ExecStart = "${cfg.package.python.pkgs.gunicorn}/bin/gunicorn --bind unix:/run/pretalx/pretalx.sock ${cfg.gunicorn.extraArgs} pretalx.wsgi";
+          ExecStart = "${getPythonBin "gunicorn"} --bind unix:/run/pretalx/pretalx.sock ${cfg.gunicorn.extraArgs} pretalx.wsgi";
         };
       } commonUnitConfig;
 
@@ -369,7 +371,7 @@ in
         ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${cfg.package.python.interpreter} -m pretalx runperiodic";
+          ExecStart = "${getPythonBin "python"} -m pretalx runperiodic";
         };
       } commonUnitConfig;
 
@@ -380,7 +382,7 @@ in
         ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${cfg.package.python.interpreter} -m pretalx clearsessions";
+          ExecStart = "${getPythonBin "python"} -m pretalx clearsessions";
         };
       } commonUnitConfig;
 
@@ -398,7 +400,7 @@ in
           "multi-user.target"
         ];
         serviceConfig = {
-          ExecStart = "${cfg.package.python.pkgs.celery}/bin/celery -A pretalx.celery_app worker ${cfg.celery.extraArgs}";
+          ExecStart = "${getPythonBin "celery"} -A pretalx.celery_app worker ${cfg.celery.extraArgs}";
         };
       } commonUnitConfig);
     };
