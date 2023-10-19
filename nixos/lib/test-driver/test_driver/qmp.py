@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 import socket
 from collections.abc import Iterator
 from pathlib import Path
 from queue import Queue
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 class QMPAPIError(RuntimeError):
@@ -33,13 +36,11 @@ class QMPSession:
         self.writer = sock.makefile("w")
         # Make the reader non-blocking so we can kind of select on it.
         os.set_blocking(self.reader.fileno(), False)
-        print("Waiting for greeting...")
         hello = self._wait_for_new_result()
-        print(f"Got greeting: {hello}")
+        logger.debug(f"Got greeting from QMP API: {hello}")
         # The greeting message format is:
         # { "QMP": { "version": json-object, "capabilities": json-array } }
         assert "QMP" in hello, f"Unexpected result: {hello}"
-        print("Sending QMP capabilities")
         self.send("qmp_capabilities")
 
     @classmethod
@@ -62,6 +63,7 @@ class QMPSession:
         if not line:
             return
         evt_or_result = json.loads(line)
+        logger.debug(f"Received a message: {evt_or_result}")
 
         # It's a result
         if "return" in evt_or_result or "QMP" in evt_or_result:
@@ -72,10 +74,15 @@ class QMPSession:
         else:
             raise QMPAPIError(evt_or_result)
 
-    def events(self) -> Iterator[dict[str, Any]]:
-        while not self.pending_events.empty():
+    def wait_for_event(self, timeout: int = 10) -> dict[str, Any]:
+        while self.pending_events.empty():
             self.read_pending_messages()
-            yield self.pending_events.get()
+
+        return self.pending_events.get(timeout=timeout)
+
+    def events(self, timeout: int = 10) -> Iterator[dict[str, Any]]:
+        while not self.pending_events.empty():
+            yield self.pending_events.get(timeout=timeout)
 
     def send(self, cmd: str, args: dict[str, str] = {}) -> dict[str, str]:
         self.read_pending_messages()
@@ -84,7 +91,7 @@ class QMPSession:
         if args != {}:
             data["arguments"] = args
 
-        print(f"Sending {data} to QMP...")
+        logger.debug(f"Sending {data} to QMP...")
         json.dump(data, self.writer)
         self.writer.write("\n")
         self.writer.flush()
