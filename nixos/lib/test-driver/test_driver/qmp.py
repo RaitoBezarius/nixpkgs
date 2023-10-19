@@ -1,4 +1,5 @@
 import json
+import os
 import socket
 from collections.abc import Iterator
 from pathlib import Path
@@ -30,10 +31,15 @@ class QMPSession:
         self.pending_events: Queue[dict[str, Any]] = Queue()
         self.reader = sock.makefile("r")
         self.writer = sock.makefile("w")
+        # Make the reader non-blocking so we can kind of select on it.
+        os.set_blocking(self.reader.fileno(), False)
+        print("Waiting for greeting...")
         hello = self._wait_for_new_result()
+        print(f"Got greeting: {hello}")
         # The greeting message format is:
         # { "QMP": { "version": json-object, "capabilities": json-array } }
         assert "QMP" in hello, f"Unexpected result: {hello}"
+        print("Sending QMP capabilities")
         self.send("qmp_capabilities")
 
     @classmethod
@@ -78,6 +84,7 @@ class QMPSession:
         if args != {}:
             data["arguments"] = args
 
+        print(f"Sending {data} to QMP...")
         json.dump(data, self.writer)
         self.writer.write("\n")
         self.writer.flush()
