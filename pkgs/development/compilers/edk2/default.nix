@@ -2,7 +2,6 @@
 , clangStdenv
 , fetchFromGitHub
 , fetchpatch
-, runCommand
 , libuuid
 , python3
 , bc
@@ -29,9 +28,9 @@ buildType = if stdenv.isDarwin then
   else
     "GCC5";
 
-edk2 = stdenv.mkDerivation rec {
+edk2 = stdenv.mkDerivation {
   pname = "edk2";
-  version = "202308";
+  version = "202305";
 
   patches = [
     # pass targetPrefix as an env var
@@ -41,23 +40,14 @@ edk2 = stdenv.mkDerivation rec {
     })
   ];
 
-  srcWithVendoring = fetchFromGitHub {
+  # submodules
+  src = fetchFromGitHub {
     owner = "tianocore";
     repo = "edk2";
     rev = "edk2-stable${edk2.version}";
     fetchSubmodules = true;
-    hash = "sha256-Eoi1xf/hw/Knr7n0f0rgVof7wTgrHkmvV4eJjJV1NhM=";
+    hash = "sha256-htOvV43Hw5K05g0SF3po69HncLyma3BtgpqYSdzRG4s=";
   };
-
-  # We don't want EDK2 to keep track of OpenSSL,
-  # they're frankly bad at it.
-  src = runCommand "edk2-unvendored-src" { } ''
-    cp --no-preserve=mode -r ${srcWithVendoring} $out
-    rm -rf $out/CryptoPkg/Library/OpensslLib/openssl
-    mkdir -p $out/CryptoPkg/Library/OpensslLib/openssl
-    tar --strip-components=1 -xf ${buildPackages.openssl.src} -C $out/CryptoPkg/Library/OpensslLib/openssl
-    chmod -R +w $out/
-  '';
 
   nativeBuildInputs = [ pythonEnv ];
   depsBuildBuild = [ buildPackages.stdenv.cc buildPackages.util-linux buildPackages.bash ];
@@ -81,7 +71,6 @@ edk2 = stdenv.mkDerivation rec {
     # patchShebangs fails to see these when cross compiling
     for i in $out/BaseTools/BinWrappers/PosixLike/*; do
       substituteInPlace $i --replace '/usr/bin/env bash' ${buildPackages.bash}/bin/bash
-      chmod +x "$i"
     done
   '';
 
