@@ -4,34 +4,6 @@ systemConfig=@systemConfig@
 
 export HOME=/root PATH="@path@"
 
-
-if [ "${IN_NIXOS_SYSTEMD_STAGE1:-}" != true ]; then
-    # Process the kernel command line.
-    for o in $(</proc/cmdline); do
-        case $o in
-            boot.debugtrace)
-                # Show each command.
-                set -x
-                ;;
-        esac
-    done
-
-
-    # Print a greeting.
-    echo
-    echo -e "\e[1;32m<<< @distroName@ Stage 2 >>>\e[0m"
-    echo
-
-
-    # Normally, stage 1 mounts the root filesystem read/writable.
-    # However, in some environments, stage 2 is executed directly, and the
-    # root is read-only.  So make it writable here.
-    if [ -z "$container" ]; then
-        mount -n -o remount,rw none /
-    fi
-fi
-
-
 # Likewise, stage 1 mounts /proc, /dev and /sys, so if we don't have a
 # stage 1, we need to do that here.
 if [ ! -e /proc/1 ]; then
@@ -53,6 +25,30 @@ if [ ! -e /proc/1 ]; then
     source @earlyMountScript@
 fi
 
+# Process the kernel command line.
+for o in $(</proc/cmdline); do
+    case $o in
+        boot.debugtrace)
+            # Show each command.
+            set -x
+            ;;
+    esac
+done
+
+if [ "${IN_NIXOS_SYSTEMD_STAGE1:-}" != true ]; then
+    # Print a greeting.
+    echo
+    echo -e "\e[1;32m<<< @distroName@ Stage 2 >>>\e[0m"
+    echo
+
+
+    # Normally, stage 1 mounts the root filesystem read/writable.
+    # However, in some environments, stage 2 is executed directly, and the
+    # root is read-only.  So make it writable here.
+    if [ -z "$container" ]; then
+        mount -n -o remount,rw none /
+    fi
+fi
 
 if [ "${IN_NIXOS_SYSTEMD_STAGE1:-}" = true ] || [ ! -c /dev/kmsg ] ; then
     echo "booting system configuration ${systemConfig}"

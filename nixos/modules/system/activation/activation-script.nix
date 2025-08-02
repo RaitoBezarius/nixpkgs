@@ -53,6 +53,16 @@ let
     ''
       #!${pkgs.runtimeShell}
 
+      # Process the kernel command line.
+      for o in $(</proc/cmdline); do
+          case $o in
+              boot.debugtrace)
+                  # Show each command.
+                  set -x
+                  ;;
+          esac
+      done
+
       source ${./lib/lib.sh}
 
       systemConfig='@out@'
