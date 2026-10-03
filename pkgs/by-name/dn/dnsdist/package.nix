@@ -19,7 +19,7 @@
   re2,
   rustPlatform,
   stdenv,
-  systemd,
+  systemdLibs,
   xdp-tools,
   zlib,
 }:
@@ -54,7 +54,7 @@ stdenv.mkDerivation (finalAttrs: {
     nghttp2
     openssl
     re2
-    systemd
+    systemdLibs
     xdp-tools # AF_XDP support
     zlib
   ];

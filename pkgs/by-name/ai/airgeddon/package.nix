@@ -51,7 +51,7 @@
   glibc,
   ncurses,
   networkmanager,
-  systemd,
+  systemdLibs,
   # Support groups
   supportWpaWps ? true, # Most common use-case
   supportHashCracking ? false,
@@ -80,7 +80,7 @@ let
     ethtool
     util-linux
     ccze
-    systemd
+    systemdLibs
   ]
   ++ lib.optionals supportWpaWps [
     bully

@@ -10,7 +10,7 @@
   sqlite,
   protobuf,
   openssl,
-  systemd,
+  systemdLibs,
   mariadb-connector-c,
   libpq,
   lua,
@@ -48,7 +48,7 @@ stdenv.mkDerivation (finalAttrs: {
     curl
     unixodbc
     openssl
-    systemd
+    systemdLibs
     lmdb
     tinycdb
   ];

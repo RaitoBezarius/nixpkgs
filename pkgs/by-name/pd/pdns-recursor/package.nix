@@ -6,7 +6,7 @@
   boost,
   nixosTests,
   openssl,
-  systemd,
+  systemdLibs,
   lua,
   luajit,
   protobuf,
@@ -47,7 +47,7 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs = [
     boost
     openssl
-    systemd
+    systemdLibs
     lua
     luajit
     libsodium
